@@ -1,0 +1,89 @@
+FORMAT: 1A
+HOST: http://rimokon.herokuapp.com
+
+# rimokon
+
+Mockup server that can create and delete routes on the fly. 
+
+## Create route [/create_route]
+
+### create_route [POST]
+
+Create new route for given method and will respond with chosen response code defined in header, response containing body that we've just posted and header just stripped of information that is being used for creating new route (route path, method and status code)
+Mandatory header parts - route, method and response_code
+
++ Request (application/json)
+
+    + Headers
+
+            route: /test/route/5
+            method: GET
+            response_code: 201
+            test_header: what_do_you_expect
+            
+    + Body
+    
+            {
+                "test" : "rest"
+            }
+
++ Response 200 (text/html)
+
+    + Body
+
+            New route/test/route/5 for GET with response code 203
+
+## Delete route [/delete_routes]
+
+### delete_routes [GET]
+
+Deletes specified route for chosen method that are in memory
+Mandatory header parts - route, method. Otherwise flushes all existing routes
+
+
++ Response 200 (text/html)
+
+    + Body
+
+            deleted all routes
+
+
++ Request (application/json)
+
+    + Headers
+
+            route: /test/route/5
+            method: GET
+
++ Response 200 (text/html)
+
+    + Body
+
+            deleted route/test/route/5 for GET
+
+## Recall last request [/get_last_request]
+
+### get_last_request [GET]
+
+Recall last request that was sent on chosen route and method type.
+Mandatory header parts - route, method
+
++ Request (application/json)
+
+    + Headers
+    
+            route: /test/route/5
+            method: GET
+            response_code: 201
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+              "header": {
+                "host": "rimokon.herokuapp.com",
+                "testing": "tester",
+              },
+              "body": {}
+            }
