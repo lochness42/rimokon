@@ -26,19 +26,19 @@ app.all('/create_route', function(req, res, next) {
 
   if(route === undefined){
     this_response += 'Route is not defined\n'
-    res.statusCode = 500 
+    res.statusCode = 400 
   } else {
     delete response_header['route']
   }
   if(response_code === undefined){
     this_response += 'Response code is not defined\n'
-    res.statusCode = 500 
+    res.statusCode = 400 
   } else {
     delete response_header['response_code']
   }
   if(request_method === undefined){
     this_response += 'Method is not defined\n'
-    res.statusCode = 500 
+    res.statusCode = 400 
   } else {
     request_method = request_method.toUpperCase()
     delete response_header['request_method']
@@ -69,7 +69,7 @@ app.all('/get_last_request', function(req, res, next) {
   
   if(route === undefined || request_method === undefined){
     res.statusCode = 400;
-    res.header = {'Content-Type': 'text/plain'}
+    res.set({'Content-Type': 'text/plain'})
     res.send('You forgot to define method or routing.');
   } else {
     request_method = request_method.toUpperCase()
@@ -81,7 +81,7 @@ app.all('/get_last_request', function(req, res, next) {
     } else {
       console.log("Request history not found for specified route" + route + " and method " + request_method)
       res.statusCode = 400;
-      res.header = {'Content-Type': 'text/plain'}
+      res.set({'Content-Type': 'text/plain'})
       res.send('No entry for ' + req.method + ' ' + req.url + ' yet.');
     }
   }
@@ -92,8 +92,8 @@ app.all('/*', function(req, res, next){
   var request_method = req.method
   var route_response = data_storage.find_route(request_method, route)
   if (route_response == undefined){
-    res.statusCode = 400;
-    res.header = {'Content-Type': 'text/plain'}
+    res.statusCode = 404;
+    res.set({'Content-Type': 'text/plain'})
     res.send('Cannot handle ' + req.method + ' ' + req.url);
   } else {
     data_storage.save_last_request_for_route(request_method, route, req.headers, req.body)
