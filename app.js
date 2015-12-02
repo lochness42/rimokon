@@ -28,20 +28,20 @@ app.all('/create_route', function(req, res, next) {
     this_response += 'Route is not defined\n'
     res.statusCode = 400 
   } else {
-    delete response_header['route']
+    delete response_header.route
   }
   if(response_code === undefined){
     this_response += 'Response code is not defined\n'
     res.statusCode = 400 
   } else {
-    delete response_header['response_code']
+    delete response_header.response_code
   }
   if(request_method === undefined){
     this_response += 'Method is not defined\n'
     res.statusCode = 400 
   } else {
     request_method = request_method.toUpperCase()
-    delete response_header['request_method']
+    delete response_header.request_method
   }
   
   data_storage.add_route(request_method, route, response_code, response_header, req.body)
@@ -87,6 +87,30 @@ app.all('/get_last_request', function(req, res, next) {
   }
 });
 
+app.all('/get_request_history', function(req, res, next) {
+  var route = req.get('route')
+  var request_method = req.get('method').toUpperCase()
+  
+  if(route === undefined || request_method === undefined){
+    res.statusCode = 400;
+    res.set({'Content-Type': 'text/plain'})
+    res.send('You forgot to define method or routing.');
+  } else {
+    request_method = request_method.toUpperCase()
+    var request_history = data_storage.find_all_requests_for_route(request_method, route)
+    if (request_history !== undefined) {
+      res.statusCode = 200;
+      res.header = {'Content-Type': 'application/json'}
+      res.send(request_history);  
+    } else {
+      console.log("Request history not found for specified route" + route + " and method " + request_method)
+      res.statusCode = 400;
+      res.set({'Content-Type': 'text/plain'})
+      res.send('No entry for ' + req.method + ' ' + req.url + ' yet.');
+    }
+  }
+});
+
 app.all('/*', function(req, res, next){
   var route = req.path
   var request_method = req.method
@@ -97,9 +121,9 @@ app.all('/*', function(req, res, next){
     res.send('Cannot handle ' + req.method + ' ' + req.url);
   } else {
     data_storage.save_last_request_for_route(request_method, route, req.headers, req.body)
-    res.statusCode = route_response['response_code']
-    res.set(route_response['header'])
-    res.send(route_response['body'])
+    res.statusCode = route_response.response_code
+    res.set(route_response.header)
+    res.send(route_response.body)
     console.log('Request object: header - ' + req.headers + ' and body - ' + req.body) 
   }
   next()
