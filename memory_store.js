@@ -35,26 +35,34 @@ var MemoryStore = function() {
   }
 
   this.save_last_request_for_route = function(method, route, header, body) {
-  	var routing_key = method + '||' + route
-  	var request = {
+   	var routing_key = method + '||' + route
+	 	var request = {
  	    'header' : header,
 	    'body' : body,	
   	}
-    requestHistoryObject[routing_key] = request
+ 	  if (requestHistoryObject.hasOwnProperty(routing_key)){
+ 	  	requestHistoryObject[routing_key].push(request)
+	  } else {
+	  	requestHistoryObject[routing_key] = [request]
+	  }
   }
 
 	this.find_last_request_for_route = function(method, route) {
-  	var routing_key = method + '||' + route
- 	  if (requestHistoryObject.hasOwnProperty(routing_key)){
-	    return requestHistoryObject[routing_key]
+  	var routeHistory = this.find_all_requests_for_route(method, route)
+ 	  if (routeHistory != undefined){
+	    return routeHistory[routeHistory.length - 1]
 	  } else {
 	  	return undefined
 	  }
   }
 
 	this.find_all_requests_for_route = function(method, route) {
-		console.log('Method not implemented for memory store')
-  	return undefined
+  	var routing_key = method + '||' + route
+ 	  if (requestHistoryObject.hasOwnProperty(routing_key)){
+	    return requestHistoryObject[routing_key]
+	  } else {
+	  	return undefined
+	  }
   }
 
   this.delete_request_history = function() {
