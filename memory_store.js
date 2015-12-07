@@ -8,7 +8,10 @@ var MemoryStore = function() {
   }
 
   this.add_route = function(method, route, response_code, header, body) {
-    routingObject[method + '||' + route] = {
+    if (!routingObject.hasOwnProperty(route)){
+      routingObject[route] = {}
+    }
+    routingObject[route][method] = {
       'header' : header,
       'body' : body,
       'response_code': response_code
@@ -16,17 +19,19 @@ var MemoryStore = function() {
   }
 
   this.find_route = function(method, route) {
-    var routing_key = method + '||' + route
-    if (routingObject.hasOwnProperty(routing_key)){
-      return routingObject[routing_key]
+    if (routingObject.hasOwnProperty(route)){
+      if (routingObject[route].hasOwnProperty(method)){
+         return routingObject[route][method]
+      }
     }
     return undefined
   }
 
   this.delete_route = function(method, route) {
-    var routing_key = method + '||' + route
-    if (routingObject.hasOwnProperty(routing_key)){
-      delete routingObject[routing_key]
+    if (routingObject.hasOwnProperty(route)){
+      if (routingObject[route].hasOwnProperty(method)){
+         delete routingObject[route][method]
+      }
     }
   }
 
@@ -35,15 +40,21 @@ var MemoryStore = function() {
   }
 
   this.save_last_request_for_route = function(method, route, header, body) {
-    var routing_key = method + '||' + route
     var request = {
       'header' : header,
       'body' : body,
     }
-      if (requestHistoryObject.hasOwnProperty(routing_key)){
-        requestHistoryObject[routing_key].push(request)
-    } else {
-        requestHistoryObject[routing_key] = [request]
+    if (!requestHistoryObject.hasOwnProperty(route)){
+      requestHistoryObject[route] = {}
+    }
+
+    if (requestHistoryObject.hasOwnProperty(route)){
+      if (requestHistoryObject[route].hasOwnProperty(method)){
+         return requestHistoryObject[route][method].push(request)
+      }
+      else {
+        requestHistoryObject[route][method] = [request]
+      }
     }
   }
 
@@ -57,12 +68,12 @@ var MemoryStore = function() {
   }
 
   this.find_all_requests_for_route = function(method, route) {
-    var routing_key = method + '||' + route
-      if (requestHistoryObject.hasOwnProperty(routing_key)){
-      return requestHistoryObject[routing_key]
-    } else {
-      return undefined
+    if (requestHistoryObject.hasOwnProperty(route)){
+      if (requestHistoryObject[route].hasOwnProperty(method)){
+         return requestHistoryObject[route][method]
+      }
     }
+    return undefined
   }
 
   this.delete_request_history = function() {
