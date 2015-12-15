@@ -28,8 +28,8 @@ var MongodbStore = function() {
   var routingObject
   var requestHistoryObject
 
-  this.init = function(){
-    mongoose.connect('mongodb://username:password@databaseUrl');
+  this.init = function(config){
+    mongoose.connect('mongodb://' + config.username + ':' + config.password + '@' + config.url + ':' + config.port + '/' + config.database);
   }
 
   this.add_route = function(method, route, response_code, header, body) {

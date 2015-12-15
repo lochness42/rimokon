@@ -3,7 +3,7 @@ var MemoryStore = function() {
   var requestHistoryObject
   var bluebird = require('bluebird');
 
-  this.init = function(){
+  this.init = function(config){
     routingObject = {}
     requestHistoryObject = {}
   }

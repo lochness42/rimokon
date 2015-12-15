@@ -4,17 +4,20 @@ var PostgresStore = function() {
     console.log('Database error!', err);
   });
   var pgp = require('pg-promise')();
-  var cn = {
-    host: 'hostURL',
-    port: 5432,
-    database: 'databaseName',
-    user: 'username',
-    password: 'password',
-    ssl: true
-  };
-  var db = pgp(cn);
+  var cn;
+  var db;
 
-  this.init = function(){
+  this.init = function(config){
+    cn = {
+      host: config.url,
+      port: config.port,
+      database: config.database,
+      user: config.username,
+      password: config.password,
+      ssl: true
+    };
+    db = pgp(cn);
+
     create_routing_table()
     .then(function(){
       create_history_table();

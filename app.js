@@ -5,11 +5,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 // Define store object
-//var data_storage = require('./postgres_store.js')
-//var data_storage = require('./memory_store.js')
-var data_storage = require('./mongodb_store.js')
+var data_storage = require('./' + process.env.npm_package_config_storage + '_store.js')
+var storage_config_prefix = 'npm_package_config_specific_settings_'
+var storage_config = {}
+for (var key in process.env) {
+  if(key.slice(0, storage_config_prefix.length) == storage_config_prefix){
+    storage_config[key.slice(storage_config_prefix.length, key.length)] = process.env[key]
+  }
+}
+console.log(storage_config)
 
-data_storage.init()
+data_storage.init(storage_config)
 
 var app = express();
 
@@ -64,6 +70,7 @@ app.all('/delete_routes', function(req, res, next) {
   res.status(200)
 
   if(route === undefined || request_method === undefined){
+    res.send("deleted all routes")
     data_storage.delete_all_routes()
     .then(function(data){
       res.send("deleted routes")
@@ -143,7 +150,6 @@ app.all('/*', function(req, res, next){
   var request_method = req.method
   var route_response = data_storage.find_route(request_method, route)    
     .then(function(data){
-      console.log(data)
       data_storage.save_last_request_for_route(data.method, data.route, req.headers, req.body)
       res.set(data.header)
       res.status(parseInt(data.response_code))      

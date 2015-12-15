@@ -5,6 +5,15 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "config": {
+    "storage": "mongodb",
+    "specific_settings": {
+      "username": "username",
+      "password": "password",
+      "database_url": "url",
+      "table": "table"
+    }
+  },
   "dependencies": {
     "bluebird": "^3.0.6",
     "body-parser": "~1.13.2",
