@@ -63,7 +63,6 @@ app.all('/delete_routes', function(req, res, next) {
   res.status(200)
 
   if(route === undefined || request_method === undefined){
-    res.send("deleted all routes")
     data_storage.delete_all_routes()
     .then(function(data){
       res.send("deleted routes")

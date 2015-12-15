@@ -61,7 +61,6 @@ var MemoryStore = function() {
   }
 
   this.save_last_request_for_route = function(method, route, header, body) {
-    console.log(method, route)
     return new Promise(function(resolve, reject){
       var request = {
         'route' : route,
