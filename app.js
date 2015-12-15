@@ -6,7 +6,8 @@ var bodyParser = require('body-parser');
 
 // Define store object
 //var data_storage = require('./postgres_store.js')
-var data_storage = require('./memory_store.js')
+//var data_storage = require('./memory_store.js')
+var data_storage = require('./mongodb_store.js')
 
 data_storage.init()
 
@@ -142,6 +143,7 @@ app.all('/*', function(req, res, next){
   var request_method = req.method
   var route_response = data_storage.find_route(request_method, route)    
     .then(function(data){
+      console.log(data)
       data_storage.save_last_request_for_route(data.method, data.route, req.headers, req.body)
       res.set(data.header)
       res.status(parseInt(data.response_code))      
